@@ -68,19 +68,7 @@
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
 
-        /* Referral Animation */
-        .ref-container {
-            background: linear-gradient(90deg, #ff00cc, #3333ff, #00ff87);
-            padding: 3px; border-radius: 15px; animation: glow 3s infinite alternate;
-            background-size: 200% 200%;
-        }
-        @keyframes glow {
-            0% { box-shadow: 0 0 5px #ff00cc; }
-            50% { box-shadow: 0 0 20px #3333ff; }
-            100% { box-shadow: 0 0 5px #00ff87; }
-        }
-
-        /* Nav */
+        /* Bottom Nav */
         .bottom-nav {
             position: fixed; bottom: 0; width: 100%; background: #1a1f29;
             display: flex; justify-content: space-around; padding: 12px 0;
@@ -91,7 +79,7 @@
 
         .hidden { display: none; }
         input { width: 100%; padding: 12px; margin: 8px 0; background: #0b0e14; border: 1px solid #30363d; color: white; border-radius: 8px; }
-        .leader-img { width: 35px; height: 35px; border-radius: 50%; margin-right: 10px; border: 1px solid var(--primary); object-fit: cover; }
+        .leader-img { width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; border: 2px solid var(--accent); object-fit: cover; background: #333; }
         .bonus-card { min-width: 85px; background: #21262d; padding: 10px; border-radius: 12px; text-align: center; border: 1px solid #30363d; }
         .bonus-card.active { border-color: var(--accent); background: rgba(0,255,135,0.1); }
         .wd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
@@ -105,7 +93,7 @@
     <!-- Home Page -->
     <div id="home-page">
         <div style="text-align:center; padding: 20px 0;">
-            <img src="https://via.placeholder.com/90" id="user-img" style="width:85px; height:85px; border-radius:50%; border:3px solid var(--primary); object-fit: cover;">
+            <img src="" id="user-img" style="width:85px; height:85px; border-radius:50%; border:3px solid var(--primary); object-fit: cover;">
             <h2 id="user-name" style="margin:5px 0;">লোড হচ্ছে...</h2>
             <div style="background: rgba(255,255,255,0.1); display: inline-block; padding: 2px 12px; border-radius: 20px; font-size: 12px;">
                 ID: <span id="user-id">000000</span>
@@ -127,7 +115,7 @@
         </h4>
         <div class="bonus-list" id="daily-bonus-cont" style="display: flex; overflow-x: auto; gap: 10px; padding: 10px 0;"></div>
 
-        <h4 style="margin:20px 0 10px;">🏆 সেরা ৫ আয়কারী</h4>
+        <h4 style="margin:20px 0 10px;">🏆 সেরা ৫ আয়কারী (লিডারবোর্ড)</h4>
         <div class="neon-box" style="--primary: #00ff87;"><div class="inner-content" id="home-leaderboard" style="padding: 10px 15px;">লোড হচ্ছে...</div></div>
     </div>
 
@@ -165,9 +153,9 @@
     <div id="withdraw-page" class="hidden">
         <h3 style="text-align: center;">টাকা উত্তোলন</h3>
         <div class="wd-grid">
-            <div class="wd-btn" id="btn-bkash" style="background:var(--bkash);" onclick="selectM('বিকাশ', 1020, 5, 'btn-bkash')">বিকাশ</div>
-            <div class="wd-btn" id="btn-nagad" style="background:var(--nagad);" onclick="selectM('নগদ', 1020, 5, 'btn-nagad')">নগদ</div>
-            <div class="wd-btn" id="btn-rocket" style="background:var(--rocket);" onclick="selectM('রকেট', 1020, 5, 'btn-rocket')">রকেট</div>
+            <div class="wd-btn" id="btn-bkash" style="background:var(--bkash);" onclick="selectM('বিকাশ', 1020, 0, 'btn-bkash')">বিকাশ</div>
+            <div class="wd-btn" id="btn-nagad" style="background:var(--nagad);" onclick="selectM('নগদ', 1020, 0, 'btn-nagad')">নগদ</div>
+            <div class="wd-btn" id="btn-rocket" style="background:var(--rocket);" onclick="selectM('রকেট', 1020, 0, 'btn-rocket')">রকেট</div>
             <div class="wd-btn" id="btn-rech" style="background:var(--recharge);" onclick="selectM('রিচার্জ', 100, 0, 'btn-rech')">রিচার্জ</div>
         </div>
         <div class="neon-box">
@@ -185,7 +173,7 @@
     <!-- Profile Page -->
     <div id="profile-page" class="hidden">
         <div class="neon-box" style="text-align:center;"><div class="inner-content">
-            <img src="https://via.placeholder.com/90" id="prof-img" style="width:90px; height:90px; border-radius:50%; border:3px solid var(--primary); object-fit: cover;">
+            <img src="" id="prof-img" style="width:90px; height:90px; border-radius:50%; border:3px solid var(--primary); object-fit: cover;">
             <h3 id="prof-name" style="margin: 10px 0 5px;">ইউজার</h3>
             <div style="background: rgba(255,255,255,0.1); display: inline-block; padding: 2px 15px; border-radius: 20px; font-size: 13px; margin-bottom: 10px;">
                 ID: <span id="prof-id">000000</span>
@@ -195,16 +183,8 @@
             </div>
         </div></div>
 
-        <h4 style="margin:15px 0 5px;">🔗 আপনার রেফার লিংক</h4>
-        <div class="ref-container">
-            <div class="inner-content" style="background: #1a1f29; border-radius:12px; text-align: center;">
-                <input type="text" id="ref-link" readonly style="text-align:center; border:none; background:transparent; font-weight:bold; color:var(--primary); font-size:14px; width:100%;">
-                <button class="task-btn" style="background:linear-gradient(90deg, #6a11cb, #2575fc); justify-content:center; font-size:13px; margin-top:10px;" onclick="copyRef()">লিংক কপি করুন 📋</button>
-            </div>
-        </div>
-
         <div style="background:rgba(255,69,0,0.1); border:1px dashed #ff4500; border-radius:10px; padding:15px; color:#ffbcbc; font-size:12px; margin-top:20px;">
-            <b>📌 নোটিস:</b> সঠিক নিয়মে কাজ করলে পেমেন্ট নিশ্চিত পাবেন ইনশাআল্লাহ।
+            <b>📌 নোটিস:</b> সঠিক নিয়মে কাজ করলে পেমেন্ট নিশ্চিত পাবেন ইনশাআল্লাহ। টপ ৫ লিডারবোর্ডে আসতে বেশি বেশি টাস্ক সম্পন্ন করুন।
         </div>
     </div>
 </div>
@@ -217,6 +197,7 @@
 </div>
 
 <script>
+    // ফায়ারবেস কনফিগ (আপনার নিজের টা ঠিক আছে)
     const firebaseConfig = {
         apiKey: "AIzaSyCloo0RDQDA_6ulBN1jrq8Bj23kdkA0XEo",
         authDomain: "mytakabot.firebaseapp.com",
@@ -232,12 +213,15 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
+    // টেলিগ্রাম ইউজার ডেটা
     const userData = tg.initDataUnsafe.user || { id: "123456", first_name: "ইউজার", photo_url: "" };
     const userId = userData.id;
 
     function init() {
         db.ref('users/' + userId).on('value', (snap) => {
             const d = snap.val();
+            let photo = userData.photo_url || `https://ui-avatars.com/api/?name=${userData.first_name}&background=random`;
+            
             if (d) {
                 document.getElementById('balance').innerText = (d.balance || 0).toFixed(2);
                 document.getElementById('prof-bal').innerText = (d.balance || 0).toFixed(2);
@@ -250,17 +234,15 @@
                 document.getElementById('b1-count').innerText = `বাকি: ${5 - (d.b1Count || 0)}`;
                 document.getElementById('b2-count').innerText = `বাকি: ${5 - (d.b2Count || 0)}`;
                 document.getElementById('b3-count').innerText = `বাকি: ${5 - (d.b3Count || 0)}`;
-                document.getElementById('ref-link').value = `https://t.me/Takaincome758_bot?start=${userId}`;
                 
-                let userPhoto = d.photo || userData.photo_url || "https://ui-avatars.com/api/?name="+d.name;
-                document.getElementById('user-img').src = userPhoto;
-                document.getElementById('prof-img').src = userPhoto;
+                document.getElementById('user-img').src = d.photo || photo;
+                document.getElementById('prof-img').src = d.photo || photo;
 
                 updateDailyUI(d.checkInStep || 1, d.lastCheckIn || 0);
             } else {
                 db.ref('users/' + userId).set({ 
                     name: userData.first_name, balance: 0, starCount: 0, b1Count: 0, b2Count: 0, b3Count: 0,
-                    activeDays: 1, lastCheckIn: 0, checkInStep: 1, photo: userData.photo_url || ""
+                    activeDays: 1, lastCheckIn: 0, checkInStep: 1, photo: photo
                 });
             }
         });
@@ -275,6 +257,7 @@
         el.classList.add('active');
     }
 
+    // টাস্ক এবং অন্যান্য ফাংশন আগের মতোই রাখা হয়েছে
     function startTask(type) {
         db.ref('users/'+userId).once('value').then(snap => {
             let limit = type === 'star' ? 500 : 5;
@@ -340,28 +323,37 @@
         });
     }
 
+    // লিডারবোর্ড আপডেট (বেশি আয়কারী সবার উপরে থাকবে)
     function loadLeaderboard() {
         db.ref('users').orderByChild('balance').limitToLast(5).on('value', snap => {
-            let html = ""; let list = [];
-            snap.forEach(c => { list.push(c.val()); });
-            list.reverse().forEach((u, i) => { 
-                let pic = u.photo || "https://ui-avatars.com/api/?name="+u.name;
-                html += `<div style="display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #333;">
+            let html = ""; 
+            let users = [];
+            snap.forEach(child => { users.push(child.val()); });
+            
+            // বড় থেকে ছোট সাজানো
+            users.sort((a, b) => b.balance - a.balance);
+
+            users.forEach((u, i) => { 
+                let pic = u.photo || `https://ui-avatars.com/api/?name=${u.name}`;
+                let rankColor = i === 0 ? "gold" : (i === 1 ? "#C0C0C0" : (i === 2 ? "#CD7F32" : "var(--primary)"));
+                
+                html += `
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
                     <div style="display:flex; align-items:center;">
-                        <span style="margin-right:10px; color:#8b949e;">#${i+1}</span>
-                        <img src="${pic}" class="leader-img">
-                        <span>${u.name}</span>
+                        <span style="width:25px; font-weight:bold; color:${rankColor};">#${i+1}</span>
+                        <img src="${pic}" class="leader-img" style="border-color:${rankColor};">
+                        <span style="font-size:14px; font-weight:500;">${u.name}</span>
                     </div>
-                    <b style="color:var(--accent);">${(u.balance || 0).toFixed(2)}৳</b>
+                    <b style="color:var(--accent); font-size:14px;">${(u.balance || 0).toFixed(2)}৳</b>
                 </div>`; 
             });
             document.getElementById('home-leaderboard').innerHTML = html;
         });
     }
 
-    let selM = "", selMin = 0, selFee = 0;
+    let selM = "", selMin = 0;
     function selectM(m, min, fee, btnId) {
-        selM = m; selMin = min; selFee = fee;
+        selM = m; selMin = min;
         document.querySelectorAll('.wd-btn').forEach(b => b.classList.remove('selected'));
         document.getElementById(btnId).classList.add('selected');
         document.getElementById('wd-info').innerText = `${m} (মিনিমাম ${min}৳)`;
@@ -371,6 +363,44 @@
         const num = document.getElementById('wd-num').value, amt = parseFloat(document.getElementById('wd-amt').value);
         if(!selM || isNaN(amt) || amt < selMin) return alert("সঠিক তথ্য দিন!");
         db.ref('users/' + userId).once('value').then(snap => {
-            if(amt > snap.val().balance) return alert("ব্যালেন্স নেই!");
-            db.ref('withdrawals').push({ uid: userId.toString(), method: selM, number: num, amount: amt, timestamp: Date.now() });
-            db.ref
+            const currentBal = snap.val().balance;
+            if(amt > currentBal) return alert("ব্যালেন্স নেই!");
+            
+            db.ref('withdrawals').push({ 
+                uid: userId.toString(), 
+                method: selM, 
+                number: num, 
+                amount: amt, 
+                timestamp: Date.now(),
+                status: "Pending" 
+            });
+            db.ref('users/' + userId).update({ balance: currentBal - amt });
+            alert("সফল! পেমেন্ট চেক করুন।");
+            document.getElementById('wd-num').value = "";
+            document.getElementById('wd-amt').value = "";
+        });
+    }
+
+    function loadHistory() {
+        db.ref('withdrawals').orderByChild('uid').equalTo(userId.toString()).on('value', snap => {
+            const list = document.getElementById('history-list');
+            if(!snap.exists()) { 
+                list.innerHTML = "<div style='text-align:center; color:#8b949e;'>কোনো হিস্টোরি নেই</div>";
+                return;
+            }
+            let html = "";
+            snap.forEach(child => {
+                const w = child.val();
+                html += `<div style="padding:10px; border-bottom:1px solid #333; display:flex; justify-content:space-between;">
+                    <span>${w.method} (${w.status || 'Pending'})</span>
+                    <span style="color:var(--accent);">${w.amount}৳</span>
+                </div>`;
+            });
+            list.innerHTML = html;
+        });
+    }
+
+    init();
+</script>
+</body>
+</html>
