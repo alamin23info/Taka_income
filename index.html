@@ -25,7 +25,7 @@
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; overflow-x: hidden; }
 
         .container { padding: 15px; max-width: 500px; margin: auto; }
 
@@ -48,20 +48,18 @@
             width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold;
             font-size: 16px; cursor: pointer; color: white; display: flex; justify-content: space-between; align-items: center;
         }
-        .task-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-gold { background: linear-gradient(45deg, #ffd700, #ff8c00); }
         .btn-blue { background: linear-gradient(90deg, #00c6ff, #0072ff); }
         .btn-pink { background: linear-gradient(90deg, #f093fb, #f5576c); }
         .btn-green { background: linear-gradient(90deg, #5efce8, #736efe); }
 
-        /* Animated Color Claim Button */
+        /* Claim Button Animation */
         .claim-btn {
             width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: 800;
             cursor: pointer; margin-top: 15px; display: none; color: white;
             background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
             background-size: 400% 400%;
             animation: gradientBG 3s ease infinite, pulse 1.5s infinite;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
@@ -70,15 +68,17 @@
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
 
-        .timer-display { display: none; text-align: center; color: #ffeb3b; font-weight: bold; margin-top: 10px; }
-
-        /* Withdraw Grid */
-        .wd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .wd-btn {
-            padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; cursor: pointer;
-            border: 3px solid transparent; transition: 0.3s; color: white; opacity: 0.8;
+        /* Referral Animation */
+        .ref-container {
+            background: linear-gradient(90deg, #ff00cc, #3333ff, #00ff87);
+            padding: 3px; border-radius: 15px; animation: glow 3s infinite alternate;
+            background-size: 200% 200%;
         }
-        .wd-btn.selected { border-color: white; opacity: 1; transform: scale(1.05); box-shadow: 0 0 15px rgba(255,255,255,0.4); }
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px #ff00cc; }
+            50% { box-shadow: 0 0 20px #3333ff; }
+            100% { box-shadow: 0 0 5px #00ff87; }
+        }
 
         /* Nav */
         .bottom-nav {
@@ -89,10 +89,14 @@
         .nav-link { color: #8b949e; text-decoration: none; font-size: 12px; text-align: center; flex: 1; cursor: pointer; }
         .nav-link.active { color: var(--primary); font-weight: bold; }
 
-        .status-pending { color: #f1c40f; }
-        .status-confirm { color: var(--accent); }
         .hidden { display: none; }
         input { width: 100%; padding: 12px; margin: 8px 0; background: #0b0e14; border: 1px solid #30363d; color: white; border-radius: 8px; }
+        .leader-img { width: 35px; height: 35px; border-radius: 50%; margin-right: 10px; border: 1px solid var(--primary); object-fit: cover; }
+        .bonus-card { min-width: 85px; background: #21262d; padding: 10px; border-radius: 12px; text-align: center; border: 1px solid #30363d; }
+        .bonus-card.active { border-color: var(--accent); background: rgba(0,255,135,0.1); }
+        .wd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .wd-btn { padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; cursor: pointer; border: 3px solid transparent; transition: 0.3s; color: white; opacity: 0.8; }
+        .wd-btn.selected { border-color: white; opacity: 1; transform: scale(1.05); }
     </style>
 </head>
 <body>
@@ -101,25 +105,30 @@
     <!-- Home Page -->
     <div id="home-page">
         <div style="text-align:center; padding: 20px 0;">
-            <img src="https://via.placeholder.com/90" id="user-img" style="width:80px; border-radius:50%; border:3px solid var(--primary);">
+            <img src="https://via.placeholder.com/90" id="user-img" style="width:85px; height:85px; border-radius:50%; border:3px solid var(--primary); object-fit: cover;">
             <h2 id="user-name" style="margin:5px 0;">লোড হচ্ছে...</h2>
-            <small style="color:#8b949e;">ID: <span id="user-id">000000</span></small>
+            <div style="background: rgba(255,255,255,0.1); display: inline-block; padding: 2px 12px; border-radius: 20px; font-size: 12px;">
+                ID: <span id="user-id">000000</span>
+            </div>
         </div>
 
         <div class="neon-box">
             <div class="inner-content">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; text-align:center;">
-                    <div>ব্যালেন্স<br><b id="balance" style="color:var(--accent); font-size:20px;">০.০০</b> ৳</div>
-                    <div>সক্রিয় দিন<br><b id="active-days" style="color:var(--primary); font-size:20px;">১</b> দিন</div>
+                    <div>ব্যালেন্স<br><b id="balance" style="color:var(--accent); font-size:22px;">০.০০</b> ৳</div>
+                    <div>সক্রিয় দিন<br><b id="active-days" style="color:var(--primary); font-size:22px;">১</b> দিন</div>
                 </div>
             </div>
         </div>
 
-        <h4 style="margin:15px 0 5px;">🎁 ডেইলি চেক-ইন বোনাস</h4>
+        <h4 style="margin:15px 0 5px; display: flex; justify-content: space-between; align-items: center;">
+            🎁 ডেইলি বোনাস 
+            <button id="claim-daily-btn" onclick="claimDaily()" style="background:var(--accent); border:none; padding:5px 10px; border-radius:5px; font-weight:bold; cursor:pointer;">ক্লেম</button>
+        </h4>
         <div class="bonus-list" id="daily-bonus-cont" style="display: flex; overflow-x: auto; gap: 10px; padding: 10px 0;"></div>
 
-        <h4 style="margin:15px 0 5px;">🏆 সেরা ৫ আয়কারী</h4>
-        <div class="neon-box" style="--primary: #00ff87;"><div class="inner-content" id="home-leaderboard">লোড হচ্ছে...</div></div>
+        <h4 style="margin:20px 0 10px;">🏆 সেরা ৫ আয়কারী</h4>
+        <div class="neon-box" style="--primary: #00ff87;"><div class="inner-content" id="home-leaderboard" style="padding: 10px 15px;">লোড হচ্ছে...</div></div>
     </div>
 
     <!-- Task Page -->
@@ -128,10 +137,9 @@
         
         <div class="neon-box" style="--primary: #ffd700; --secondary: #ff4500;">
             <div class="inner-content" style="text-align:center;">
-                <h2>🚀 Start Earning</h2>
-                <span class="counter-txt" id="star-count">বাকি: ৫০০/৫০০</span>
+                <h2>🚀 Star Earning</h2>
+                <span id="star-count" style="font-weight:bold; color:var(--primary);">দেখা হয়েছে: ০/৫০০</span>
                 <button class="task-btn btn-gold" id="btn-star" onclick="startTask('star')" style="justify-content:center; margin-top:10px;">অ্যাড দেখুন</button>
-                <div id="star-timer" class="timer-display">অপেক্ষা করুন: ৬০ সেকেন্ড</div>
                 <button id="claim-star" class="claim-btn" onclick="claimReward('star')">০.২৫ টাকা যোগ করুন 💰</button>
             </div>
         </div>
@@ -139,19 +147,16 @@
         <h4 style="margin:20px 0 10px;">বোনাস টাস্ক (প্রতিটি ৫ বার)</h4>
         <div class="neon-box" style="--primary: #00c6ff; --secondary: #0072ff;"><div class="inner-content">
             <button class="task-btn btn-blue" id="btn-b1" onclick="startTask('b1')"><span>Bonus Task 1</span> <span id="b1-count">বাকি: ৫</span></button>
-            <div id="b1-timer" class="timer-display">অপেক্ষা করুন: ৬০ সেকেন্ড</div>
             <button id="claim-b1" class="claim-btn" onclick="claimReward('b1')">০.২৫ টাকা ক্লেম 💰</button>
         </div></div>
 
         <div class="neon-box" style="--primary: #f093fb; --secondary: #f5576c;"><div class="inner-content">
             <button class="task-btn btn-pink" id="btn-b2" onclick="startTask('b2')"><span>Bonus Task 2</span> <span id="b2-count">বাকি: ৫</span></button>
-            <div id="b2-timer" class="timer-display">অপেক্ষা করুন: ৬০ সেকেন্ড</div>
             <button id="claim-b2" class="claim-btn" onclick="claimReward('b2')">০.২৫ টাকা ক্লেম 💰</button>
         </div></div>
 
         <div class="neon-box" style="--primary: #5efce8; --secondary: #736efe;"><div class="inner-content">
             <button class="task-btn btn-green" id="btn-b3" onclick="startTask('b3')"><span>Bonus Task 3</span> <span id="b3-count">বাকি: ৫</span></button>
-            <div id="b3-timer" class="timer-display">অপেক্ষা করুন: ৬০ সেকেন্ড</div>
             <button id="claim-b3" class="claim-btn" onclick="claimReward('b3')">০.২৫ টাকা ক্লেম 💰</button>
         </div></div>
     </div>
@@ -165,7 +170,6 @@
             <div class="wd-btn" id="btn-rocket" style="background:var(--rocket);" onclick="selectM('রকেট', 1020, 5, 'btn-rocket')">রকেট</div>
             <div class="wd-btn" id="btn-rech" style="background:var(--recharge);" onclick="selectM('রিচার্জ', 100, 0, 'btn-rech')">রিচার্জ</div>
         </div>
-
         <div class="neon-box">
             <div class="inner-content">
                 <div id="wd-info" style="text-align: center; color: var(--accent); font-weight: bold;">মেথড সিলেক্ট করুন</div>
@@ -174,30 +178,33 @@
                 <button class="task-btn" style="background: var(--accent); color: black; justify-content: center;" onclick="requestWd()">রিকোয়েস্ট পাঠান</button>
             </div>
         </div>
-
         <h4>ইতিহাস</h4>
-        <div class="neon-box"><div class="inner-content" style="padding:0;" id="history-list">লোড হচ্ছে...</div></div>
+        <div id="history-list" style="background:var(--card-bg); border-radius:10px;"></div>
     </div>
 
     <!-- Profile Page -->
     <div id="profile-page" class="hidden">
         <div class="neon-box" style="text-align:center;"><div class="inner-content">
-            <img src="https://via.placeholder.com/90" id="prof-img" style="width:80px; border-radius:50%; border:3px solid var(--primary);">
-            <h3 id="prof-name">ইউজার</h3>
-            <small>ID: <span id="prof-id">000000</span></small>
-            <div style="margin-top:10px; background:linear-gradient(45deg, var(--primary), var(--secondary)); padding:10px; border-radius:10px;">
+            <img src="https://via.placeholder.com/90" id="prof-img" style="width:90px; height:90px; border-radius:50%; border:3px solid var(--primary); object-fit: cover;">
+            <h3 id="prof-name" style="margin: 10px 0 5px;">ইউজার</h3>
+            <div style="background: rgba(255,255,255,0.1); display: inline-block; padding: 2px 15px; border-radius: 20px; font-size: 13px; margin-bottom: 10px;">
+                ID: <span id="prof-id">000000</span>
+            </div>
+            <div style="background:linear-gradient(45deg, var(--primary), var(--secondary)); padding:12px; border-radius:12px; font-weight: bold;">
                 ব্যালেন্স: <span id="prof-bal">০.০০</span> ৳
             </div>
         </div></div>
 
-        <h4 style="margin:15px 0 5px;">🔗 রেফার লিংক</h4>
-        <div class="neon-box"><div class="inner-content">
-            <input type="text" id="ref-link" readonly onclick="copyRef()">
-            <button class="task-btn" style="background:#333; justify-content:center; font-size:13px;" onclick="copyRef()">লিংক কপি করুন 📋</button>
-        </div></div>
+        <h4 style="margin:15px 0 5px;">🔗 আপনার রেফার লিংক</h4>
+        <div class="ref-container">
+            <div class="inner-content" style="background: #1a1f29; border-radius:12px; text-align: center;">
+                <input type="text" id="ref-link" readonly style="text-align:center; border:none; background:transparent; font-weight:bold; color:var(--primary); font-size:14px; width:100%;">
+                <button class="task-btn" style="background:linear-gradient(90deg, #6a11cb, #2575fc); justify-content:center; font-size:13px; margin-top:10px;" onclick="copyRef()">লিংক কপি করুন 📋</button>
+            </div>
+        </div>
 
-        <div style="background:rgba(255,69,0,0.1); border:1px dashed #ff4500; border-radius:10px; padding:15px; color:#ffbcbc; font-size:12px;">
-            <b>📌 নোটিস:</b> সঠিক নিয়মে কাজ করলে প্রতি মাসের ৯ তারিখে উত্তোলন রিকোয়েস্ট দিবেন এবং ১০ তারিখের মধ্যে পেমেন্ট পাবেন ইনশাআল্লাহ।
+        <div style="background:rgba(255,69,0,0.1); border:1px dashed #ff4500; border-radius:10px; padding:15px; color:#ffbcbc; font-size:12px; margin-top:20px;">
+            <b>📌 নোটিস:</b> সঠিক নিয়মে কাজ করলে পেমেন্ট নিশ্চিত পাবেন ইনশাআল্লাহ।
         </div>
     </div>
 </div>
@@ -225,9 +232,8 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    const userData = tg.initDataUnsafe.user || { id: "123456", first_name: "User" };
+    const userData = tg.initDataUnsafe.user || { id: "123456", first_name: "ইউজার", photo_url: "" };
     const userId = userData.id;
-    let selM = "", selMin = 0, selFee = 0;
 
     function init() {
         db.ref('users/' + userId).on('value', (snap) => {
@@ -240,20 +246,24 @@
                 document.getElementById('user-id').innerText = userId;
                 document.getElementById('prof-id').innerText = userId;
                 document.getElementById('active-days').innerText = d.activeDays || 1;
-                document.getElementById('star-count').innerText = `বাকি: ${500 - (d.starCount || 0)}/৫০০`;
+                document.getElementById('star-count').innerText = `দেখা হয়েছে: ${d.starCount || 0}/৫০০`;
                 document.getElementById('b1-count').innerText = `বাকি: ${5 - (d.b1Count || 0)}`;
                 document.getElementById('b2-count').innerText = `বাকি: ${5 - (d.b2Count || 0)}`;
                 document.getElementById('b3-count').innerText = `বাকি: ${5 - (d.b3Count || 0)}`;
                 document.getElementById('ref-link').value = `https://t.me/Takaincome758_bot?start=${userId}`;
-                if(userData.photo_url) {
-                    document.getElementById('user-img').src = userData.photo_url;
-                    document.getElementById('prof-img').src = userData.photo_url;
-                }
+                
+                let userPhoto = d.photo || userData.photo_url || "https://ui-avatars.com/api/?name="+d.name;
+                document.getElementById('user-img').src = userPhoto;
+                document.getElementById('prof-img').src = userPhoto;
+
+                updateDailyUI(d.checkInStep || 1, d.lastCheckIn || 0);
             } else {
-                db.ref('users/' + userId).set({ name: userData.first_name, balance: 0, starCount: 0, b1Count: 0, b2Count: 0, b3Count: 0, activeDays: 1, lastBonus: 0 });
+                db.ref('users/' + userId).set({ 
+                    name: userData.first_name, balance: 0, starCount: 0, b1Count: 0, b2Count: 0, b3Count: 0,
+                    activeDays: 1, lastCheckIn: 0, checkInStep: 1, photo: userData.photo_url || ""
+                });
             }
         });
-        loadCheckIn();
         loadLeaderboard();
         loadHistory();
     }
@@ -262,37 +272,19 @@
         db.ref('users/'+userId).once('value').then(snap => {
             let limit = type === 'star' ? 500 : 5;
             let current = snap.val()[type+'Count'] || 0;
-            if(current >= limit) return alert("লিমিট শেষ!");
+            if(current >= limit) return alert("আজকের লিমিট শেষ!");
 
-            // Show Ad logic
             if(typeof show_10670646 === 'function'){
-                show_10670646().then(() => runTimer(type)).catch(() => runTimer(type));
+                show_10670646().then(() => showClaim(type)).catch(() => showClaim(type));
             } else {
-                runTimer(type);
+                showClaim(type);
             }
         });
     }
 
-    function runTimer(type) {
-        const btn = document.getElementById('btn-' + type);
-        const timerDisp = document.getElementById(type + '-timer');
-        const claimBtn = document.getElementById('claim-' + type);
-
-        btn.disabled = true;
-        timerDisp.style.display = 'block';
-        claimBtn.style.display = 'none';
-
-        let timeLeft = 60;
-        const countdown = setInterval(() => {
-            timeLeft--;
-            timerDisp.innerText = `অপেক্ষা করুন: ${timeLeft} সেকেন্ড`;
-            if(timeLeft <= 0) {
-                clearInterval(countdown);
-                timerDisp.style.display = 'none';
-                claimBtn.style.display = 'block';
-                btn.disabled = false;
-            }
-        }, 1000);
+    function showClaim(type) {
+        document.getElementById('btn-' + type).style.display = 'none';
+        document.getElementById('claim-' + type).style.display = 'block';
     }
 
     function claimReward(type) {
@@ -302,78 +294,84 @@
                 [type+'Count']: (snap.val()[type+'Count'] || 0) + 1 
             });
             document.getElementById('claim-' + type).style.display = 'none';
+            document.getElementById('btn-' + type).style.display = 'flex';
             alert("সফলভাবে ০.২৫ টাকা যোগ হয়েছে! ✅");
         });
     }
 
+    function updateDailyUI(step, lastTime) {
+        const cont = document.getElementById('daily-bonus-cont');
+        cont.innerHTML = "";
+        const now = Date.now();
+        const canClaim = (now - lastTime) >= 86400000;
+
+        for(let i=1; i<=7; i++) {
+            let isActive = i === step;
+            cont.innerHTML += `<div class="bonus-card ${isActive?'active':''}">দিন ${i}<br><b>${(i * 0.25).toFixed(2)}৳</b></div>`;
+        }
+        document.getElementById('claim-daily-btn').disabled = !canClaim;
+        document.getElementById('claim-daily-btn').innerText = canClaim ? "ক্লেম" : "কাল আসুন";
+    }
+
+    function claimDaily() {
+        db.ref('users/' + userId).once('value').then(snap => {
+            const d = snap.val();
+            const now = Date.now();
+            if((now - (d.lastCheckIn || 0)) < 86400000) return alert("আগামীকাল আবার আসুন!");
+
+            let currentStep = d.checkInStep || 1;
+            let reward = currentStep * 0.25;
+            let nextStep = currentStep >= 7 ? 1 : currentStep + 1;
+
+            db.ref('users/' + userId).update({
+                balance: d.balance + reward,
+                lastCheckIn: now,
+                checkInStep: nextStep,
+                activeDays: (d.activeDays || 1) + 1
+            });
+            alert(`অভিনন্দন! আপনি ${reward} টাকা বোনাস পেয়েছেন। ✅`);
+        });
+    }
+
+    function loadLeaderboard() {
+        db.ref('users').orderByChild('balance').limitToLast(5).on('value', snap => {
+            let html = ""; let list = [];
+            snap.forEach(c => { list.push(c.val()); });
+            list.reverse().forEach((u, i) => { 
+                let pic = u.photo || "https://ui-avatars.com/api/?name="+u.name;
+                html += `<div style="display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #333;">
+                    <div style="display:flex; align-items:center;">
+                        <span style="margin-right:10px; color:#8b949e;">#${i+1}</span>
+                        <img src="${pic}" class="leader-img">
+                        <span>${u.name}</span>
+                    </div>
+                    <b style="color:var(--accent);">${u.balance.toFixed(2)}৳</b>
+                </div>`; 
+            });
+            document.getElementById('home-leaderboard').innerHTML = html;
+        });
+    }
+
+    let selM = "", selMin = 0, selFee = 0;
     function selectM(m, min, fee, btnId) {
         selM = m; selMin = min; selFee = fee;
         document.querySelectorAll('.wd-btn').forEach(b => b.classList.remove('selected'));
         document.getElementById(btnId).classList.add('selected');
-        document.getElementById('wd-info').innerText = `${m} (মিনিমাম ${min}৳, ফি ${fee}%)`;
+        document.getElementById('wd-info').innerText = `${m} (মিনিমাম ${min}৳)`;
     }
 
     function requestWd() {
         const num = document.getElementById('wd-num').value, amt = parseFloat(document.getElementById('wd-amt').value);
         if(!selM || isNaN(amt) || amt < selMin) return alert("সঠিক তথ্য দিন!");
         db.ref('users/' + userId).once('value').then(snap => {
-            const total = amt + (amt * selFee / 100);
-            if(total > snap.val().balance) return alert("পর্যাপ্ত ব্যালেন্স নেই!");
+            if(amt > snap.val().balance) return alert("ব্যালেন্স নেই!");
             db.ref('withdrawals').push({ uid: userId.toString(), method: selM, number: num, amount: amt, timestamp: Date.now() });
-            db.ref('users/' + userId).update({ balance: snap.val().balance - total });
-            alert("সফল! ২ ঘণ্টা পর চেক করুন।");
+            db.ref('users/' + userId).update({ balance: snap.val().balance - amt });
+            alert("সফল! পেমেন্ট চেক করুন।");
         });
     }
 
     function loadHistory() {
         db.ref('withdrawals').orderByChild('uid').equalTo(userId.toString()).on('value', snap => {
             const list = document.getElementById('history-list');
-            if(!snap.exists()) { list.innerHTML = "<div style='padding:15px;text-align:center;'>ইতিহাস নেই</div>"; return; }
-            let html = "";
-            snap.forEach(c => {
-                const d = c.val();
-                const isConfirmed = (Date.now() - d.timestamp) > (2 * 60 * 60 * 1000);
-                html = `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;">
-                    <span>${d.method} (${d.amount}৳)</span>
-                    <span class="${isConfirmed?'status-confirm':'status-pending'}">${isConfirmed?'Confirmed ✅':'Pending ⏳'}</span>
-                </div>` + html;
-            });
-            list.innerHTML = html;
-        });
-    }
-
-    function loadCheckIn() {
-        const cont = document.getElementById('daily-bonus-cont');
-        cont.innerHTML = "";
-        for(let i=1; i<=7; i++) {
-            cont.innerHTML += `<div class="bonus-item" style="min-width: 85px; background: #21262d; padding: 12px; border-radius: 10px; text-align: center; border: 1px solid #30363d;">দিন ${i}<br><b>${(i*0.5).toFixed(2)}৳</b></div>`;
-        }
-    }
-
-    function loadLeaderboard() {
-        db.ref('users').orderByChild('balance').limitToLast(5).on('value', snap => {
-            let html = ""; let list = [];
-            snap.forEach(c => list.push(c.val()));
-            list.reverse().forEach((u, i) => { html += `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #333;"><span>${i+1}. ${u.name}</span><b>${u.balance.toFixed(2)}৳</b></div>`; });
-            document.getElementById('home-leaderboard').innerHTML = html;
-        });
-    }
-
-    function showPage(p, el) {
-        document.querySelectorAll('#app > div').forEach(page => page.classList.add('hidden'));
-        document.getElementById(p + '-page').classList.remove('hidden');
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        el.classList.add('active');
-    }
-
-    function copyRef() {
-        const refInput = document.getElementById("ref-link");
-        refInput.select();
-        document.execCommand("copy");
-        alert("লিংক কপি হয়েছে!");
-    }
-
-    init();
-</script>
-</body>
-    </html>
+            if(!snap.exists()) { list.innerHTML = "<div styl
