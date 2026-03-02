@@ -105,7 +105,7 @@
     <!-- Home Page -->
     <div id="home-page">
         <div style="text-align:center; padding: 20px 0;">
-            <img src="https://via.placeholder.com/90" id="user-img" style="width:85px; height:85px; border-radius:50%; border:3px solid var(--primary); object-fit: cover;">
+            <img src="https://ui-avatars.com/api/?name=User&background=random" id="user-img" style="width:85px; height:85px; border-radius:50%; border:3px solid var(--primary); object-fit: cover;">
             <h2 id="user-name" style="margin:5px 0;">লোড হচ্ছে...</h2>
             <div style="background: rgba(255,255,255,0.1); display: inline-block; padding: 2px 12px; border-radius: 20px; font-size: 12px;">
                 ID: <span id="user-id">000000</span>
@@ -185,7 +185,7 @@
     <!-- Profile Page -->
     <div id="profile-page" class="hidden">
         <div class="neon-box" style="text-align:center;"><div class="inner-content">
-            <img src="https://via.placeholder.com/90" id="prof-img" style="width:90px; height:90px; border-radius:50%; border:3px solid var(--primary); object-fit: cover;">
+            <img src="https://ui-avatars.com/api/?name=User&background=random" id="prof-img" style="width:90px; height:90px; border-radius:50%; border:3px solid var(--primary); object-fit: cover;">
             <h3 id="prof-name" style="margin: 10px 0 5px;">ইউজার</h3>
             <div style="background: rgba(255,255,255,0.1); display: inline-block; padding: 2px 15px; border-radius: 20px; font-size: 13px; margin-bottom: 10px;">
                 ID: <span id="prof-id">000000</span>
@@ -217,6 +217,7 @@
 </div>
 
 <script>
+    // আপনার Firebase কনফিগ
     const firebaseConfig = {
         apiKey: "AIzaSyCloo0RDQDA_6ulBN1jrq8Bj23kdkA0XEo",
         authDomain: "mytakabot.firebaseapp.com",
@@ -230,19 +231,24 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const tg = window.Telegram.WebApp;
+    
+    // টেলিগ্রাম বট লোডিং ফিক্স
+    tg.ready();
     tg.expand();
 
-    const userData = tg.initDataUnsafe.user || { id: "123456", first_name: "ইউজার", photo_url: "" };
+    // ইউজার ডেটা
+    const userData = tg.initDataUnsafe.user || { id: "123456", first_name: "User", photo_url: "" };
     const userId = userData.id;
 
     function init() {
+        // ডেটাবেস কানেকশন এবং ডেটা আপডেট
         db.ref('users/' + userId).on('value', (snap) => {
             const d = snap.val();
             if (d) {
-                document.getElementById('balance').innerText = d.balance.toFixed(2);
-                document.getElementById('prof-bal').innerText = d.balance.toFixed(2);
-                document.getElementById('user-name').innerText = d.name;
-                document.getElementById('prof-name').innerText = d.name;
+                document.getElementById('balance').innerText = (d.balance || 0).toFixed(2);
+                document.getElementById('prof-bal').innerText = (d.balance || 0).toFixed(2);
+                document.getElementById('user-name').innerText = d.name || userData.first_name;
+                document.getElementById('prof-name').innerText = d.name || userData.first_name;
                 document.getElementById('user-id').innerText = userId;
                 document.getElementById('prof-id').innerText = userId;
                 document.getElementById('active-days').innerText = d.activeDays || 1;
@@ -252,15 +258,24 @@
                 document.getElementById('b3-count').innerText = `বাকি: ${5 - (d.b3Count || 0)}`;
                 document.getElementById('ref-link').value = `https://t.me/Takaincome758_bot?start=${userId}`;
                 
-                let userPhoto = d.photo || userData.photo_url || "https://ui-avatars.com/api/?name="+d.name;
+                // প্রোফাইল পিকচার ফিক্স (টেলিগ্রামের ফটো না থাকলে অবতার দেখাবে)
+                let userPhoto = userData.photo_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(d.name || userData.first_name)}&background=random&color=fff`;
                 document.getElementById('user-img').src = userPhoto;
                 document.getElementById('prof-img').src = userPhoto;
 
                 updateDailyUI(d.checkInStep || 1, d.lastCheckIn || 0);
             } else {
+                // নতুন ইউজার ডাটাবেসে সেভ
                 db.ref('users/' + userId).set({ 
-                    name: userData.first_name, balance: 0, starCount: 0, b1Count: 0, b2Count: 0, b3Count: 0,
-                    activeDays: 1, lastCheckIn: 0, checkInStep: 1, photo: userData.photo_url || ""
+                    name: userData.first_name || "User", 
+                    balance: 0, 
+                    starCount: 0, 
+                    b1Count: 0, 
+                    b2Count: 0, 
+                    b3Count: 0,
+                    activeDays: 1, 
+                    lastCheckIn: 0, 
+                    checkInStep: 1
                 });
             }
         });
@@ -268,6 +283,7 @@
         loadHistory();
     }
 
+    // টাস্ক বাটন লজিক
     function startTask(type) {
         db.ref('users/'+userId).once('value').then(snap => {
             let limit = type === 'star' ? 500 : 5;
@@ -311,6 +327,7 @@
         }
         document.getElementById('claim-daily-btn').disabled = !canClaim;
         document.getElementById('claim-daily-btn').innerText = canClaim ? "ক্লেম" : "কাল আসুন";
+        document.getElementById('claim-daily-btn').style.opacity = canClaim ? "1" : "0.5";
     }
 
     function claimDaily() {
@@ -338,7 +355,7 @@
             let html = ""; let list = [];
             snap.forEach(c => { list.push(c.val()); });
             list.reverse().forEach((u, i) => { 
-                let pic = u.photo || "https://ui-avatars.com/api/?name="+u.name;
+                let pic = `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=random`;
                 html += `<div style="display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid #333;">
                     <div style="display:flex; align-items:center;">
                         <span style="margin-right:10px; color:#8b949e;">#${i+1}</span>
@@ -362,16 +379,4 @@
 
     function requestWd() {
         const num = document.getElementById('wd-num').value, amt = parseFloat(document.getElementById('wd-amt').value);
-        if(!selM || isNaN(amt) || amt < selMin) return alert("সঠিক তথ্য দিন!");
-        db.ref('users/' + userId).once('value').then(snap => {
-            if(amt > snap.val().balance) return alert("ব্যালেন্স নেই!");
-            db.ref('withdrawals').push({ uid: userId.toString(), method: selM, number: num, amount: amt, timestamp: Date.now() });
-            db.ref('users/' + userId).update({ balance: snap.val().balance - amt });
-            alert("সফল! পেমেন্ট চেক করুন।");
-        });
-    }
-
-    function loadHistory() {
-        db.ref('withdrawals').orderByChild('uid').equalTo(userId.toString()).on('value', snap => {
-            const list = document.getElementById('history-list');
-            if(!snap.exists()) { list.innerHTML = "<div styl
+        if(!selM || isNaN(amt) || amt < selMin)
